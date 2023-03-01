@@ -24,7 +24,10 @@ class TimestampAdapter extends TypeAdapter<Long> {
 
     @Override
     public Long read(JsonReader in) throws java.io.IOException {
-        var instant = Instant.parse(in.nextString());
+        var instantStr = in.nextString();
+        // JANK
+        instantStr = instantStr.replaceAll("\\+[\\d:]+$", "Z");
+        var instant = Instant.parse(instantStr);
         return instant.getEpochSecond();
     }
 }
