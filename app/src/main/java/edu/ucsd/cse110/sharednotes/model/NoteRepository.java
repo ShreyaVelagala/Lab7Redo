@@ -38,6 +38,7 @@ public class NoteRepository {
 
         Observer<Note> updateFromRemote = theirNote -> {
             var ourNote = note.getValue();
+            if (theirNote == null) return;
             if (ourNote == null || ourNote.updatedAt < theirNote.updatedAt) {
                 upsertLocal(theirNote);
             }
@@ -120,9 +121,12 @@ public class NoteRepository {
 
     public void upsertRemote(Note note) {
         // TODO: Implement upsertRemote!
+        /*
         if(!dao.exists(note.title)) {
             note.updatedAt = System.currentTimeMillis();
         }
+        */
+
         api.PutNote(note);
         //throw new UnsupportedOperationException("Not implemented yet");
     }
