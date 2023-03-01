@@ -27,6 +27,9 @@ class TimestampAdapter extends TypeAdapter<Long> {
         var instantStr = in.nextString();
         // JANK
         instantStr = instantStr.replaceAll("\\+[\\d:]+$", "Z");
+        if (!instantStr.endsWith("Z")) {
+            instantStr+="Z";
+        }
         var instant = Instant.parse(instantStr);
         return instant.getEpochSecond();
     }

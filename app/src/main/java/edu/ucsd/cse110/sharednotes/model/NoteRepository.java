@@ -14,9 +14,12 @@ import java.util.concurrent.TimeUnit;
 public class NoteRepository {
     private final NoteDao dao;
     NoteAPI api;
+    ScheduledFuture<?> clockFuture;
 
     public NoteRepository(NoteDao dao) {
+
         this.dao = dao;
+        api = NoteAPI.provide();
     }
 
     // Synced Methods
@@ -98,18 +101,21 @@ public class NoteRepository {
 
         //throw new UnsupportedOperationException("Not implemented yet");
 
-        ScheduledFuture<?> clockFuture;
-        MutableLiveData<Note> updatedNote = new MutableLiveData<Note>();
+        if (clockFuture != null) {
+            clockFuture.cancel(true);
+        }
 
-        api = NoteAPI.provide();
+        MutableLiveData<Note> updatedNote = new MutableLiveData<Note>();
+        var executor = Executors.newSingleThreadScheduledExecutor();
+
+
         //MutableLiveData<Note> updatedNote =
 
-        var executor = Executors.newSingleThreadScheduledExecutor();
-        clockFuture = executor.scheduleAtFixedRate(() -> {
+
+        this.clockFuture = executor.scheduleAtFixedRate(() -> {
             // fetching new note content from server
-            Note note = api.GetNote(title);
-            updatedNote.postValue(note); // fromJSON here instead
-        }, 0, 3000, TimeUnit.MILLISECONDS);
+            updatedNote.postValue(api.GetNote(title)); // fromJSON here instead
+        }, 0, 3, TimeUnit.SECONDS);
         return updatedNote;
 
 
