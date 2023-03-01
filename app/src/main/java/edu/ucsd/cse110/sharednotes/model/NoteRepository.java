@@ -1,5 +1,7 @@
 package edu.ucsd.cse110.sharednotes.model;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -115,6 +117,13 @@ public class NoteRepository {
         this.clockFuture = executor.scheduleAtFixedRate(() -> {
             // fetching new note content from server
             updatedNote.postValue(api.GetNote(title)); // fromJSON here instead
+            try {
+                Thread.sleep(1000);
+            }
+            catch (Exception e) {
+                Log.e("Note Repository", "getRemote: ", e);
+            }
+
         }, 0, 3, TimeUnit.SECONDS);
         return updatedNote;
 

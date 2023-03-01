@@ -60,19 +60,18 @@ public class NoteAPI {
     public Note GetNote(String title) {
         // URLs cannot contain spaces, so we replace them with %20.
         title = title.replace(" ", "%20");
+            var request = new Request.Builder()
+                    .url("https://sharednotes.goto.ucsd.edu/notes/" + title)
+                    .method("GET", null) // body is null because not putting anything into the server
+                    .build();
 
-        var request = new Request.Builder()
-                .url("https://sharednotes.goto.ucsd.edu/notes/" + title)
-                .method("GET", null) // body is null because not putting anything into the server
-                .build();
-
-        try (var response = client.newCall(request).execute()) {
-            assert response.body() != null;
-            var body = response.body().string();
-            return Note.fromJSON(body);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try (var response = client.newCall(request).execute()) {
+                assert response.body() != null;
+                var body = response.body().string();
+                return Note.fromJSON(body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         return null;
     }
 
@@ -95,6 +94,12 @@ public class NoteAPI {
             }
         });
         networkThread.start();
+        try {
+            networkThread.join();
+        }
+        catch (Exception e){
+            Log.e("Note Repository", "getRemote: ", e);
+        }
     }
 
 }
